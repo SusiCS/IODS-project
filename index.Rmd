@@ -1,5 +1,6 @@
 ---
 title: "IODS course project"
+author: Susanne Csader (SusiCS)
 output:
   html_document:
     theme: cosmo

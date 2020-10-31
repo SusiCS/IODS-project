@@ -11,3 +11,38 @@ date()
 ```
 The text continues here.
 
+# Exercise 1 - getting familiar with RStudio, RMarkdown, GitHub
+
+### by SusiCS
+
+**How I am feeling right now?**
+
+Well, I would say *excited* but also *confused* **:)** I am just at the beginning of learning to use R and then also using GitHub makes it more complicated but it is also a great challenge. I think it will help me a lot to understand my the work of others using R. Besides, it is always good to learn something new!!
+
+**What I am expecting to learn? **
+ 
+* I conducted a clinical research, with made a lot of fun and is very interesting, although I had to handle a lot of stool samples. 
+* However, omics data will be analyzed by another PhD student using R. Therefore, I should be able to know how he worked with R and because I am in a big EU project it would be useful to work with open research tools, so that we can better communicate.
+* And I need a better understanding in statistics :)
+*...
+*...
+*...
+*...
+* **AND it makes a nice impression using fancy graphs XP**
+
+**Where I heard from this course?**
+
+Through our UEF Yammer --> I am just a bit late, saw the add this Thursday morning.
+
+## My GitHub link
+
+https://github.com/SusiCS/IODS-project.git
+
+
+
+*Happy to be in this course*
+
+![alt text](https://media.giphy.com/media/26n7aEZAyO0HuyUzS/giphy.gif)
+
+***
+Amasing -- *It is working!!!!*
