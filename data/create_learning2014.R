@@ -9,6 +9,7 @@ lrn14 <- read.table("http://www.helsinki.fi/~kvehkala/JYTmooc/JYTOPKYS3-data.txt
 
 dim(lrn14) 
 
+
 # the data frame (n/d) comprises n= 183 observations and d= 60 variables.
 
 
