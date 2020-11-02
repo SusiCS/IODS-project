@@ -70,4 +70,5 @@ learning2014 <- filter(learning2014, points > 0)
 dim(learning2014)
 
 setwd("~/R/IODS-project/data")
-write.csv(learning2014)
+
+write.csv(learning2014, file = '~/R/IODS-project/data.csv', row.names = FALSE)
