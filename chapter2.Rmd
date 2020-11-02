@@ -1,4 +1,4 @@
-# Insert chapter 2 title here
+# Chapter 2: Regression and Model variation
 
 *Describe the work you have done this week and summarize your learning.*
 
@@ -11,3 +11,16 @@ date()
 ```
 
 Here we go again...
+
+# Data warngling
+## Integrating data from the web into R
+
+Data frame is learning2014 with 183 observations and 60 variables.
+[The description of the variables are available here](https://www.mv.helsinki.fi/home/kvehkala/JYTmooc/JYTOPKYS3-meta.txt)
+
+**reading data into R, exploring the structure and dimension of the data**
+```{r}
+lrn14<-read.table("http://www.helsinki.fi/~kvehkala/JYTmooc/JYTOPKYS3-data.txt", sep="\t", header=TRUE)
+dim(lrn14)
+str(lrn14)
+```
