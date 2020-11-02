@@ -67,3 +67,6 @@ learning2014 <- filter(learning2014, points > 0)
 
 # to see if I have all observations 
 dim(learning2014)
+
+setwd("~/R/IODS-project/data")
+write.csv(learning2014)
