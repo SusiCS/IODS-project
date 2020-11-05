@@ -12,15 +12,123 @@ date()
 
 Here we go again...
 
-# Data warngling
-## Integrating data from the web into R
+# Data wrangling
+
+Integrating data from the web into R
 
 Data frame is learning2014 with 183 observations and 60 variables.
 [The description of the variables are available here](https://www.mv.helsinki.fi/home/kvehkala/JYTmooc/JYTOPKYS3-meta.txt)
 
-**reading data into R, exploring the structure and dimension of the data**
+**how to do that , see create_learning2014.R** in my github
+
+# Data analysis
+
+###1. reading the data file from another source
+
 ```{r}
-lrn14<-read.table("http://www.helsinki.fi/~kvehkala/JYTmooc/JYTOPKYS3-data.txt", sep="\t", header=TRUE)
-dim(lrn14)
-str(lrn14)
+learning2014<- read.table("http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/learning2014.txt", sep=",", header=T)
+
+dim(learning2014)
+str(learning2014)
 ```
+
+The data file includes 166 observations and 7 variables. The variables are gender, age, attitude (global attitude towards statistic, includes 10 questions, displayed is the mean of 10 questions), deep (deep questions includes 12 questions, displayed is the mean of the 12 questions), stra (strategic questions includes 8 questions, displayed is the mean of 8 questions), surf (surface questions, include 12 questions, displayed is the mean of the 12 questions) and points (exam points). Attitude, deep, stra, surface questions were answered view Lieke scale.
+
+###2. Graphical overview
+
+```{r}
+
+library(ggplot2)
+library(GGally)
+# alpha=0.5 lightens the colour, bins for the visual scale display
+p <- ggpairs(learning2014, mapping = aes(col = gender, alpha = 0.1), lower = list(combo = wrap("facethist", bins = 20)))
+p
+```
+
+This graph shows an overview of data distribution and correlation. 
+First of all, in this data set more women participated than men. Most of the subjects were younger than 30. The exam points were in average 25 points, The attitude questions of the female were answered in average with lower points (average ~2.9) than the male (average ~3.3).The deep question results are quite the same between male and female (m:~3.7;f:~3.6). Also for strategic (f:~3.6;m:~3.5) and surface questions it is very similar (f:~2.8;m:~2.4). Also the correlation in total (black) and the correlation of male and female are displayed.
+Significant negative correlation is between surface questions and attitude questions.The overall neg. correlation is -0.176 with a p-Value < 0.05. for the female there is no significant correlation but for the male it is -0.374 with a p-value < 0.01. In an easier way, if the male answered the attitude questions with higher points the surface questions were answered with lower points and other way round. A very high significant negative correlation with a p-value of 0.001 is between deep questions and surface question (-0.324) Here is also only a significance for the male recognized (-0.622). Also here, if the male subjects answered the question of deep with high points the surface questions were answered with lower points and verce vice. An example for a positve significant correlation is between attitude and points (0.437, p-value<0.001). The older the subject the higher rated the attitude questions. This was for the female subjects (0.422, p-valuez0.001) as wel as for the male participants (0.451, p-value<0.001).
+Another negative correlation is between the strategic questions and the surface question (p<0.05). However only in overall (-0.161). 
+
+###3. fitting a regression model
+
+```{r}
+my_model_p <- lm(points ~ attitude + stra + surf, data = learning2014)
+summary(my_model_p)
+```
+ 
+This a regression model with points as dependent variable and the explanatory variables are attitude, strategic, surface. This was chosen due to highest correlations (see graph above). The first results are a summary of the residuals.The residuals are the distance from the data to the fitted line we created. Ideally the data points should be symmetrical distributed around the line (this would be the case if the min and max value has approximately hte same distance to 0 and also the first and third quartile has the same distance to 0, ideally median should be close to 0). The median in our model is near 0 and also the 1Q and 3Q are quite equal. However, the min and max values are not similar. An indicator that the model might not be the best. 
+Next, the Coefficients are presented. 
+For this model (linear regression) the formula is:
+**points = alpha (=intercept) + b*attitude + b1*stra + b2*surf + e**
+The estimated values (first column) are the slope of the formula. This means for example, if attitude questions would be increased by 1 point (Lieke scale 1-5), the number of points in the exam would increase by ~3.4.For 1 "unit" strategic questions exam points increase by 0.85 and for the surface questions the exam points would decrease by -0.6. The standard error of estimate and t-value (column 2+3) are provided to show how the p-value were calculated. The pr values is the p-value for estimated parameters. We can see here that only attitude has a significance in this model. This means it seems that only the attitude questions have an influence on exam points. e is a random error component. 
+The R^2 is 0.2074. So attitude questions, surface questions and strategic questions can explain ~21% the exam points. This is not very high.  The adjustes R^2 is always smaller. It takes the vumers of variables into acount (or better the degree of freedom). This values is 0.1927. The significance for this modrl is very high (3.15e-08). This means that there is a relation between the exam points and the explinatory variables. 
+The questions that rise up are: Are the variables are correlated to each other?(Can not be answered yet-> don't know how to do it in R :) ) And the non significant variables in this model, do we need them for a good model?
+The new model without the significant variables are shown in 4..
+
+```{r}
+my_model_p1<-lm(points ~ age + attitude + stra , data=learning2014)
+summary(my_model_p1)
+```
+
+This model this better to fit. The adjusted R^2 is higher than in the previews model. For age and str variables the p value for the estimated slope values is 0.1 not very low and actually not significant but still better than in the first model.  
+
+###4. new fitted model
+
+```{r]}
+my_model_p2<-lm(points ~ attitude + stra , data=learning2014)
+summary(my_model_p2)
+```
+
+This model takes the explanatory variables attitude and stra into account to explain the exam points. The results are quite similar. The adjusted R^2 is a little bit higher with R^2= 0.1951. This means the model could be a bit better than my_model_p. The surface questions have probably no influence or very very low influence on exam points. The strategic questions would now take less influence (0.9137) on the exam as well as the attitude (3.467). However, the strategic estimated value has a lower p-value (0.0621) than before. The overall p-value of 7.734e-09 is also better compared to the first model my_model_p.
+
+```{r]}
+my_model_p3<- lm(points ~ attitude, data = learning2014)
+summary(my_model_p3)
+```
+
+This is now the model with only one explanatory variable attitude. The residual summary is worse compared to the other models. The estimated value for attitude is now 3.5255. The exam points increase (improve) about 3.5 points if the attitude questions in mean increase about 1 point. There is a relation between both variables because the the attitude is high significant (p-value <0.001).
+The R^2 is lower compared to the other models. It says that 19% of exam points can be explained by the attitude. however, we should 
+consider the adjusted R^2. It is scaled by the number of parameters in the model. If we add more and more variables, the R^2 would also increase. But it doesn't say if  these variable contribute to the dependent variable (If they have a relation to that variable). The adjusted R^2 is calculated by taking the degrees of freedom (which means also the explanatory variables) into account. The power of the model is then reduced. 
+
+As a conclusion, model_p1 (age, attitude, stra) is the best fitted model if we look at the adjusted R^2. The second best would be model_p3 (only attitude variable), Therefore these both models will be graphical displayed in task 5.
+
+###5. Diagnostic plots
+
+```{r}
+my_model_gra <- lm(points ~ attitude + stra, data = learning2014)
+par(mfrow = c(2,2))
+plot(my_model_gra, which = c(1,2,5),main = "Graphical model validation")
+```
+
+```{r}
+my_model_gra_alt <- lm(points ~ attitude + stra + age, data = learning2014)
+par(mfrow = c(2,2))
+plot(my_model_gra_alt, which = c(1,2,5),main = "Graphical model validation 2")
+```
+
+```{r}
+my_model_gra_alt1 <- lm(points ~ attitude, data = learning2014)
+par(mfrow = c(2,2))
+plot(my_model_gra_alt1, which = c(1,2,5),main = "Graphical model validation 3")
+```
+
+The assumptions of the linear regression:
+
+1. **Normal distribution** FOr any fixed value of x. Y is normally distributed
+2. **Equal Error Variance/Homoscedasticity** Constant Error Variance is the same as  
+3. **Linearity** The intercept, slope and error should be linear and additive. The relationship between X and the mean of Y is linear.
+4. **Independent Observations** (Independent Error Term). All observations are independent. 
+
+
+The "Residuals vs Fitted" graph shows the residuals from the data and if they have non-linear patterns. This means they are random which means that there is a *Equal Error Variance*. So this assumption is fulfilled. This graph is also used for *Independent Observations*. We can see no correlation in this graph, so this assumption is also fine.
+
+*Normal Distribution* is checked from a Normal Q-Q plot. This shows us if the errors/residuals are normally distributed. This is not the case in our data set. We have at the beginning and at the end some outliers that don't fit to the line. This assumption is not fully fulfilled. We have for our data a little negative skew. However, we should think about if these outlier are influential to this model. This will be checked with the last plot.
+
+The Residuals vs Leverage shows any influential cases. Outlines don't have to be always influential in a regression model. Cases outside the Cook's distance line are outliers that would influence the regression model and should be eventually excluded. Here we cannot even see the Cook's distance line in the graph. Which means we have no influential outliers. 
+
+Taken all together, the model is ok, but it doesn't explain quite well the relation for the exam points (20% can be explain by attitude and strategic questions). Probably, better models should be applied.
+For me the best model is p1 with explanatory variables: attitude, age and strategic.
+________
+
+![Feeling of the week](https://media.giphy.com/media/2ui9QSWRYsqwo/giphy.gif)
