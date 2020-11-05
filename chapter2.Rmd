@@ -129,6 +129,6 @@ The Residuals vs Leverage shows any influential cases. Outlines don't have to be
 
 Taken all together, the model is ok, but it doesn't explain quite well the relation for the exam points (20% can be explain by attitude and strategic questions). Probably, better models should be applied.
 For me the best model is p1 with explanatory variables: attitude, age and strategic.
-________
+
 
 ![Feeling of the week](https://media.giphy.com/media/2ui9QSWRYsqwo/giphy.gif)
