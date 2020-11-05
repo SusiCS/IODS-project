@@ -76,3 +76,4 @@ setwd("~/R/IODS-project")
 # write a csv file
 write.csv(learning2014, file = '~/R/IODS-project/data/learning2014.csv', row.names = FALSE)
 
+read.csv(learning2014.csv, header=T, sep = "\t")
