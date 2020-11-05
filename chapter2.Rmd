@@ -23,7 +23,7 @@ Data frame is learning2014 with 183 observations and 60 variables.
 
 # Data analysis
 
-###1. reading the data file from another source
+### 1. reading the data file from another source
 
 ```{r}
 learning2014<- read.table("http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/learning2014.txt", sep=",", header=T)
@@ -34,7 +34,7 @@ str(learning2014)
 
 The data file includes 166 observations and 7 variables. The variables are gender, age, attitude (global attitude towards statistic, includes 10 questions, displayed is the mean of 10 questions), deep (deep questions includes 12 questions, displayed is the mean of the 12 questions), stra (strategic questions includes 8 questions, displayed is the mean of 8 questions), surf (surface questions, include 12 questions, displayed is the mean of the 12 questions) and points (exam points). Attitude, deep, stra, surface questions were answered view Lieke scale.
 
-###2. Graphical overview
+### 2. Graphical overview
 
 ```{r}
 
@@ -50,7 +50,7 @@ First of all, in this data set more women participated than men. Most of the sub
 Significant negative correlation is between surface questions and attitude questions.The overall neg. correlation is -0.176 with a p-Value < 0.05. for the female there is no significant correlation but for the male it is -0.374 with a p-value < 0.01. In an easier way, if the male answered the attitude questions with higher points the surface questions were answered with lower points and other way round. A very high significant negative correlation with a p-value of 0.001 is between deep questions and surface question (-0.324) Here is also only a significance for the male recognized (-0.622). Also here, if the male subjects answered the question of deep with high points the surface questions were answered with lower points and verce vice. An example for a positve significant correlation is between attitude and points (0.437, p-value<0.001). The older the subject the higher rated the attitude questions. This was for the female subjects (0.422, p-valuez0.001) as wel as for the male participants (0.451, p-value<0.001).
 Another negative correlation is between the strategic questions and the surface question (p<0.05). However only in overall (-0.161). 
 
-###3. fitting a regression model
+### 3. fitting a regression model
 
 ```{r}
 my_model_p <- lm(points ~ attitude + stra + surf, data = learning2014)
@@ -73,7 +73,7 @@ summary(my_model_p1)
 
 This model this better to fit. The adjusted R^2 is higher than in the previews model. For age and str variables the p value for the estimated slope values is 0.1 not very low and actually not significant but still better than in the first model.  
 
-###4. new fitted model
+### 4. new fitted model
 
 ```{r]}
 my_model_p2<-lm(points ~ attitude + stra , data=learning2014)
@@ -93,7 +93,7 @@ consider the adjusted R^2. It is scaled by the number of parameters in the model
 
 As a conclusion, model_p1 (age, attitude, stra) is the best fitted model if we look at the adjusted R^2. The second best would be model_p3 (only attitude variable), Therefore these both models will be graphical displayed in task 5.
 
-###5. Diagnostic plots
+### 5. Diagnostic plots
 
 ```{r}
 my_model_gra <- lm(points ~ attitude + stra, data = learning2014)
