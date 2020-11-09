@@ -68,3 +68,6 @@ pormath <- por_id %>%
 # Save created data to folder 'data' as an Excel worksheet
 library(openxlsx)
 write.xlsx(pormath,file="~/IODS-project/data/pormath.xlsx")
+
+#Saved as csv file
+write.csv(pormath,file = "C:/Users/susac/Documents/R/IODS-project/data/pormath.csv")
