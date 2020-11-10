@@ -36,22 +36,67 @@ And of course, if you go out with friends the tendency to drink will be probably
 
 **testing the hypothesis**
 
-*reading of some libraries:
 ```{r}
-library(tidyr); library(dplyr); library(ggplot2)
+library(tidyr); library(dplyr); library(ggplot2)#reading some libraries
+gather(alc) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_bar() #overall view
 ```
 
+*crosstable*
+```{r}
+alc %>% group_by(sex, high_use) %>% summarise(count = n())
+alc %>% group_by(failures, high_use) %>% summarise(count = n())
+alc %>% group_by(famrel, high_use) %>% summarise(count = n())
+alc %>% group_by(goout, high_use) %>% summarise(count = n())
+```
 
+*barplot*
 
-
+*boxplot*
 
 
 **logistic regression**
 
+*model*
 ```{r}
 m <- glm(high_use ~ failures + absences + sex, data = alc, family = "binomial")
 
 summary(m)
 
 coef(m)
+```
+
+
+*odd ratio and confidence intervals (CI)*
+```{r}
+OR <- coef(m) %>% exp
+
+CI <- confint(m) %>% exp 
+
+cbind(OR, CI)
+```
+
+**predictive model**
+
+```{r}
+m <- glm(high_use ~ goout + famrel + sex, data = alc, family = "binomial")
+
+probabilities <- predict(m, type = "response")# predict() the probability of high_use
+
+alc <- mutate(alc, probability = probabilities)# add the predicted probabilities to 'alc'
+
+alc <- mutate(alc, prediction = probability > 0.5)# use the probabilities to make a prediction of high_use
+
+select(alc, goout, famrel, sex, high_use, probability, prediction) %>% tail(10)
+
+table(high_use = alc$high_use, prediction = alc$prediction)
+```
+
+*visual probability*
+```{r}
+
+g <- ggplot(alc, aes(x = probability, y = high_use, col = prediction))+ geom_point()
+
+g 
+
+table(high_use = alc$high_use, prediction = alc$prediction) %>% prop.table %>% addmargins# tabulate the target variable versus the predictions
 ```
