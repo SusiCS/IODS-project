@@ -30,8 +30,28 @@ The data are student achievement in secondary education of 2 schools. It is show
 The use of alcohol can have certain numbers of reason. For my analysis I will use the gender, the class failure, quality of family relationship, going out with friends. 
 The gender is interesting because male and female handle the alcohol consumption in a different way. normally females drink more often with friends, whereas males also drink more often alone. ALso the drinks are usually different. Males drink more beer and strong liquids, females more sparkling wine, wine and longdrinks.SO male drink more than female (my hypothesis :) )
 Class failure could be also interesting. The more failure the more the tendency to drink. 
-IS the family a supportive and cosy environment, the alcohol consumption should be less (less wrong friends, stronger resilience)
+IS the family a supportive and cosy environment (quality of fam relationship), the alcohol consumption should be less (less wrong friends, stronger resilience)
 And of course, if you go out with friends the tendency to drink will be probably higher. Even when you have not a good family life.
+
 
 **testing the hypothesis**
 
+*reading of some libraries:
+```{r}
+library(tidyr); library(dplyr); library(ggplot2)
+```
+
+
+
+
+
+
+**logistic regression**
+
+```{r}
+m <- glm(high_use ~ failures + absences + sex, data = alc, family = "binomial")
+
+summary(m)
+
+coef(m)
+```

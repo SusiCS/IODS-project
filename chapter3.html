@@ -482,7 +482,53 @@ summary {
 ##  $ cid       : int  3001 3002 3003 3004 3005 3006 3007 3008 3009 3010 ...</code></pre>
 <p>This matched data set contains now 370 obervations and 51 variables. The data are student achievement in secondary education of 2 schools. It is shown from which school the pupils are, their age, sex, if they live in urban or rural area, etc and it cointain also their alcohol consumption and weather it is high or not.</p>
 <p><strong>hypothesis towards alcohol</strong></p>
-<p>The use of alcohol can have certain numbers of reason. For my analysis I will use the gender, the class failure, quality of family relationship, going out with friends. The gender is interesting because male and female handle the alcohol consumption in a different way. normally females drink more often with friends, whereas males also drink more often alone. ALso the drinks are usually different. Males drink more beer and strong liquids, females more sparkling wine, wine and longdrinks.SO male drink more than female (my hypothesis :) ) Class failure could be also interesting. The more failure the more the tendency to drink. IS the family a supportive and cosy environment, the alcohol consumption should be less (less wrong friends, stronger resilience) And of course, if you go out with friends the tendency to drink will be probably higher. Even when you have not a good family life.</p>
+<p>The use of alcohol can have certain numbers of reason. For my analysis I will use the gender, the class failure, quality of family relationship, going out with friends. The gender is interesting because male and female handle the alcohol consumption in a different way. normally females drink more often with friends, whereas males also drink more often alone. ALso the drinks are usually different. Males drink more beer and strong liquids, females more sparkling wine, wine and longdrinks.SO male drink more than female (my hypothesis :) ) Class failure could be also interesting. The more failure the more the tendency to drink. IS the family a supportive and cosy environment (quality of fam relationship), the alcohol consumption should be less (less wrong friends, stronger resilience) And of course, if you go out with friends the tendency to drink will be probably higher. Even when you have not a good family life.</p>
+<p><strong>testing the hypothesis</strong></p>
+<p>*reading of some libraries:</p>
+<pre class="r"><code>library(tidyr); library(dplyr); library(ggplot2)</code></pre>
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 4.0.3</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 4.0.3</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 4.0.3</code></pre>
+<p><strong>logistic regression</strong></p>
+<pre class="r"><code>m &lt;- glm(high_use ~ failures + absences + sex, data = alc, family = &quot;binomial&quot;)
+
+summary(m)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = high_use ~ failures + absences + sex, family = &quot;binomial&quot;, 
+##     data = alc)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.1550  -0.8430  -0.5889   1.0328   2.0374  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -1.94150    0.23129  -8.394  &lt; 2e-16 ***
+## failures     0.59759    0.20698   2.887  0.00389 ** 
+## absences     0.09245    0.02323   3.979 6.91e-05 ***
+## sexM         0.99731    0.24725   4.034 5.49e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 452.04  on 369  degrees of freedom
+## Residual deviance: 406.99  on 366  degrees of freedom
+## AIC: 414.99
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>coef(m)</code></pre>
+<pre><code>## (Intercept)    failures    absences        sexM 
+## -1.94149584  0.59759293  0.09245138  0.99731318</code></pre>
 </div>
 
 
