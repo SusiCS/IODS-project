@@ -36,11 +36,14 @@ And of course, if you go out with friends the tendency to drink will be probably
 
 **testing the hypothesis**
 
+*barplot*
 ```{r}
-library(tidyr); library(dplyr); library(ggplot2)#reading some libraries
-gather(alc) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_bar() #overall view
+library(tidyr); library(dplyr); library(ggplot2)
+
+gather(alc) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_bar()
 ```
 
+Unfortunately, you cannot see well the graphs. However, you it is shown that most of the students have no failures. Just a few have 1 or 2 past class failures. Most of the students have good family relationships (4) or even very good relationships (5).The variable goout looks quite normal distributed. most of them go moderate out (3). In this data file a slight higher number of female students were asked.
 *crosstable*
 ```{r}
 alc %>% group_by(sex, high_use) %>% summarise(count = n())
@@ -48,20 +51,34 @@ alc %>% group_by(failures, high_use) %>% summarise(count = n())
 alc %>% group_by(famrel, high_use) %>% summarise(count = n())
 alc %>% group_by(goout, high_use) %>% summarise(count = n())
 ```
-
-*barplot*
+If we look at the crosstables, which shows the relationship between high use of alcohol and the other variables, we see that more female student drink less (154 females to 105 males) alcohol and more male students drink more alcohol(70 males to 41 females). --> **Hypotheses is fulfilled**.
+For the failures, we can see that no fails of students have the highest number of low alcohol use (238) but also for high alcohol use (87). This means the **hypothesis is not fulfilled**. But if we look at the relation to the students in each category, the alcohol use is higher - **hypothesis fulfilled**.
+For the family relation is the higher the quality of th relationships is the higher is the number of low alcohol drinker but also the more high use of alcohol is recognized. The highest number of high use of alcohol is at good relationships with 52 students (grade 4).But it has also the highst number no low alcohol drinker (128) It seems that also here that the **(hypothesis is not fulfilled)**. However if we look at the realtions of false and true of each grade, it might looks different. Is the relationship not good, 1/4-1/2 drink more alcohol. This is getting lower the higher the quality of relationships are.**Hypothesis fulfilled if we look at each category sepratly**.
+For the times, how often students go out and how much they drink, we can see the more student go out the more they drink. **Hypothesis fulfilled**.
 
 *boxplot*
-
+```{r}
+fail<- ggplot(alc, aes(x = high_use, y = failures))+ geom_boxplot() + ggtitle("Relation of failures and alcohol consumption")
+fail
+fail1<-ggplot(alc, aes(x = high_use, y = failures, col = sex))+ geom_boxplot() + ggtitle("Relation of failures, alcohol consumption and sex")
+fail1
+fam<- ggplot(alc, aes(x = high_use, y = famrel))+ geom_boxplot() + ggtitle("Relation of quality in family relationship and alcohol consumption")
+fam
+fam1<-ggplot(alc, aes(x = high_use, y = famrel, col = sex))+ geom_boxplot() + ggtitle("Relation of quality in family relationship, alcohol consumption and sex")
+fam1
+go<- ggplot(alc, aes(x = high_use, y = goout))+ geom_boxplot() + ggtitle("Relation of going out with friends and alcohol consumption")
+go
+go1<-ggplot(alc, aes(x = high_use, y = goout, col = sex))+ geom_boxplot() + ggtitle("Relation of going out with friends, alcohol consumption and sex")
+go1
+```
+Here are the boxplots. They show an overall view of the data. For the failure, the boxplot seems not to be suitable (Don't know why...). No statement can be made. For the family relation we see that the higher the family relationships were ranked the less alcohol were drunken. **The hypothesis can be confirmed**. It seems also that more male studens have a better relationship with the family. ALso the more the students go out, the more the alcohol they drink. Also more male students go out and drink also more. **Hypothesis is fulfilled**.
 
 **logistic regression**
 
 *model*
 ```{r}
-m <- glm(high_use ~ failures + absences + sex, data = alc, family = "binomial")
-
+m <- glm(high_use ~ goout + famrel + sex, data = alc, family = "binomial")
 summary(m)
-
 coef(m)
 ```
 
