@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Data Analysis
 
-**reading the data**
+**1./2. reading the data**
 ```{r}
 alc <- read.csv("https://github.com/rsund/IODS-project/raw/master/data/alc.csv")
 ```
@@ -25,7 +25,7 @@ str(alc)
 This matched data set contains now 370 obervations and 51 variables.
 The data are student achievement in secondary education of 2 schools. It is shown from which school the pupils are, their age, sex, if they live in urban or rural area, etc and it cointain also their alcohol consumption and weather it is high or not.
 
-**hypothesis towards alcohol**
+**3. hypothesis towards alcohol**
 
 The use of alcohol can have certain numbers of reason. For my analysis I will use the gender, the class failure, quality of family relationship, going out with friends. 
 The gender is interesting because male and female handle the alcohol consumption in a different way. normally females drink more often with friends, whereas males also drink more often alone. ALso the drinks are usually different. Males drink more beer and strong liquids, females more sparkling wine, wine and longdrinks.SO male drink more than female (my hypothesis :) )
@@ -34,7 +34,8 @@ IS the family a supportive and cosy environment (quality of fam relationship), t
 And of course, if you go out with friends the tendency to drink will be probably higher. Even when you have not a good family life.
 
 
-**testing the hypothesis**
+
+**4. testing the hypothesis**
 
 *barplot*
 ```{r}
@@ -44,6 +45,7 @@ gather(alc) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_b
 ```
 
 Unfortunately, you cannot see well the graphs. However, you it is shown that most of the students have no failures. Just a few have 1 or 2 past class failures. Most of the students have good family relationships (4) or even very good relationships (5).The variable goout looks quite normal distributed. most of them go moderate out (3). In this data file a slight higher number of female students were asked.
+
 *crosstable*
 ```{r}
 alc %>% group_by(sex, high_use) %>% summarise(count = n())
@@ -51,6 +53,7 @@ alc %>% group_by(failures, high_use) %>% summarise(count = n())
 alc %>% group_by(famrel, high_use) %>% summarise(count = n())
 alc %>% group_by(goout, high_use) %>% summarise(count = n())
 ```
+
 If we look at the crosstables, which shows the relationship between high use of alcohol and the other variables, we see that more female student drink less (154 females to 105 males) alcohol and more male students drink more alcohol(70 males to 41 females). --> **Hypotheses is fulfilled**.
 For the failures, we can see that no fails of students have the highest number of low alcohol use (238) but also for high alcohol use (87). This means the **hypothesis is not fulfilled**. But if we look at the relation to the students in each category, the alcohol use is higher - **hypothesis fulfilled**.
 For the family relation is the higher the quality of th relationships is the higher is the number of low alcohol drinker but also the more high use of alcohol is recognized. The highest number of high use of alcohol is at good relationships with 52 students (grade 4).But it has also the highst number no low alcohol drinker (128) It seems that also here that the **(hypothesis is not fulfilled)**. However if we look at the realtions of false and true of each grade, it might looks different. Is the relationship not good, 1/4-1/2 drink more alcohol. This is getting lower the higher the quality of relationships are.**Hypothesis fulfilled if we look at each category sepratly**.
@@ -71,28 +74,36 @@ go
 go1<-ggplot(alc, aes(x = high_use, y = goout, col = sex))+ geom_boxplot() + ggtitle("Relation of going out with friends, alcohol consumption and sex")
 go1
 ```
+
 Here are the boxplots. They show an overall view of the data. For the failure, the boxplot seems not to be suitable (Don't know why...). No statement can be made. For the family relation we see that the higher the family relationships were ranked the less alcohol were drunken. **The hypothesis can be confirmed**. It seems also that more male studens have a better relationship with the family. ALso the more the students go out, the more the alcohol they drink. Also more male students go out and drink also more. **Hypothesis is fulfilled**.
 
-**logistic regression**
+**5. logistic regression**
 
-*model*
+*model + odd ratio and confidence intervalls (CI)*
 ```{r}
-m <- glm(high_use ~ goout + famrel + sex, data = alc, family = "binomial")
+m <- glm(high_use ~ goout + famrel + sex+ failures, data = alc, family = "binomial")
 summary(m)
 coef(m)
-```
-
-
-*odd ratio and confidence intervals (CI)*
-```{r}
 OR <- coef(m) %>% exp
-
 CI <- confint(m) %>% exp 
-
 cbind(OR, CI)
 ```
+THe summery of the model shows first a summary of residuals. This looks fine since they are close to being centered on = and roughly symmetrical. The coefficients are shown afterwards, including the standard error, z value and the p value of z. All chosen variables show significance which means they can explain the high_use variable. The highest significance is for male students and goout. We can assume that for one more unit (answering the questions by 1 point more) the high_use alc increase by 0.7663 (for goout), 0.47 (for failures) and about 0.95 if it is a male student. It decreases around -0.4 if the fam question is increased around 1 point. 
+The AIC (Akaike Information Criterion) is 384.44. Can be used to compare the model to other models. (It is just the residual deviance adjusted for the number of parameters in the model)
 
-**predictive model**
+After the model, you can find the coefficients showed a odd ratios. Odd ratios are not the probabilities but the show the ratio of change that something happens to the change that something not happens. It quantifies the association between 2 events. Is the odd ratio greater than 1 we have a positive association and if the odd ratio is smaller than 1 its a negative association. 
+For our model we can say that failure, goout and male have a positive association to higher use of alcohol, whereas the quality of family relationship is negatively associated to high_alc use. 
+Compared to the former hypothesis, these results agree to the hyposesis.
+
+*Because failure is not so high significant as the other, here are the logistic regression model without it:*
+```{r}
+m1 <- glm(high_use ~ goout + famrel + sex, data = alc, family = "binomial")
+summary(m1)
+```
+Here you can see that the AIC is slightly higher, so the model seems to fit better. Therefore I will use these variables for the predictive model.
+
+
+**6. predictive model**
 
 ```{r}
 m <- glm(high_use ~ goout + famrel + sex, data = alc, family = "binomial")
@@ -105,15 +116,64 @@ alc <- mutate(alc, prediction = probability > 0.5)# use the probabilities to mak
 
 select(alc, goout, famrel, sex, high_use, probability, prediction) %>% tail(10)
 
-table(high_use = alc$high_use, prediction = alc$prediction)
+table(high_use = alc$high_use, prediction = alc$prediction)# creating a confusion matrix with actual values
+
+(241+49)/(241+49+18+62)#accuracy of the model
+
+table(high_use = alc$high_use, prediction = alc$prediction) %>% prop.table %>% addmargins  # creating a confusion matrix with predicted values
+
+
 ```
+
+The first table (confusion matrix with actual values) shows that 241 students who actually don't drink much alcohol and this was also predicted by the model. 18 cases were wrong predicted, so that these 18 students drink actually less alcohol but the model predict is as high alcohol consume. 
+For high use, the model predicted 49 students as right but 62 students were considers as less alcohol use although, which is wrong. 
+As a result we can say the model is accurate for 78,4 percent.
+The second table shows the predicted values, so the probabilities.
 
 *visual probability*
 ```{r}
 
-g <- ggplot(alc, aes(x = probability, y = high_use, col = prediction))+ geom_point()
-
+g <- ggplot(alc, aes(x = probability, y = high_use, col = prediction))+ geom_point() + ggtitle("logistic regression model with the variable famrel, sex and goout")
 g 
-
-table(high_use = alc$high_use, prediction = alc$prediction) %>% prop.table %>% addmargins# tabulate the target variable versus the predictions
 ```
+
+This is the visualization of the model.
+
+*training error*
+
+```{r}
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+
+loss_func(class = alc$high_use, prob = alc$probability) # compute the average number of wrong predictions in the (training) data
+
+library(boot)
+cv <- cv.glm(data = alc, cost = loss_func, glmfit = m, K = nrow(alc)) # K-fold cross-validation, cv=training data
+
+cv$delta[1]# average number of wrong predictions in the cross validation
+```
+
+To see how good the model is, a test will be conducted. For that new test variables will be used.
+The wrong predicted value number is 22. Which is quite ok.
+
+**Bonus question**
+
+```{r}
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+
+loss_func(class = alc$high_use, prob = alc$probability) # compute the average number of wrong predictions in the (training) data
+
+library(boot)
+cv <- cv.glm(data = alc, cost = loss_func, glmfit = m, K = 10) # K-fold cross-validation, cv=training data
+
+cv$delta[1]# average number of wrong predictions in the cross validation
+``` 
+My model has a better test set perfomance, because it has 24 than 26 in the Data camp. 
+
+![Well, this week...](https://media.giphy.com/media/xT3i13zhEibLBsxOog/giphy.gif)
+
