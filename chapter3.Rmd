@@ -61,7 +61,7 @@ For the times, how often students go out and how much they drink, we can see the
 
 *boxplot*
 ```{r}
-fail<- ggplot(alc, aes(x = high_use, y = failures))+ geom_boxplot() + ggtitle("Relation of failures and alcohol consumption")
+fail<- ggplot(alc, aes(x = sex, y = alc_use, col=failures>0))+ geom_boxplot() + ggtitle("Relation of failures and alcohol consumption and sex")
 fail
 fail1<-ggplot(alc, aes(x = high_use, y = failures, col = sex))+ geom_boxplot() + ggtitle("Relation of failures, alcohol consumption and sex")
 fail1
@@ -75,7 +75,7 @@ go1<-ggplot(alc, aes(x = high_use, y = goout, col = sex))+ geom_boxplot() + ggti
 go1
 ```
 
-Here are the boxplots. They show an overall view of the data. For the failure, the boxplot seems not to be suitable (Don't know why...). No statement can be made. For the family relation we see that the higher the family relationships were ranked the less alcohol were drunken. **The hypothesis can be confirmed**. It seems also that more male studens have a better relationship with the family. ALso the more the students go out, the more the alcohol they drink. Also more male students go out and drink also more. **Hypothesis is fulfilled**.
+Here are the boxplots. They show an overall view of the data. For the failure, the normal boxplot seems not to be suitable (Don't know why...). No statement can be made. Therefore I used the alc_use, and here you can see that the more falures the more alcohol is used usually. For the family relation we see that the higher the family relationships were ranked the less alcohol were drunken. **The hypothesis can be confirmed**. It seems also that more male studens have a better relationship with the family. ALso the more the students go out, the more the alcohol they drink. Also more male students go out and drink also more. **Hypothesis is fulfilled**.
 
 **5. logistic regression**
 
