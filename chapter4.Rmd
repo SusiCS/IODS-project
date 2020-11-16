@@ -1,0 +1,31 @@
+---
+title: "chapter4"
+author: "Susanne Csader"
+date: "11/16/2020"
+output: html_document
+---
+# Clustering and Classification
+
+*2. Exploring the data "Bosten"*
+
+```{r}
+library(MASS)
+data("Boston") #loading the data
+str(Boston)
+summary(Boston)
+pairs(Boston)
+```
+
+
+This data set comprises 506 observations and 14 variables. This data set describes the crime rate by town (crim). Further varaibles are pupil teacher ratio by town (ptratio), lower status of the population in percent (lstat), average number of rooms per dwelling (rm), full-value property-tax rate per 10000$ (tax). All the other variables descriptions can be seen [here](https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/Boston.html).
+
+*3. visualization*
+
+```{r}
+library(tidyverse)
+library(corrplot)
+cor_matrix<-cor(Boston)%>% round(2)
+cor_matrix
+corrplot.mixed(cor_matrix, lower.col="black", number.cex = .8 )
+```
+
