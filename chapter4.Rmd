@@ -6,7 +6,7 @@ output: html_document
 ---
 # Clustering and Classification
 
-*2. Exploring the data "Bosten"*
+**2. Exploring the data "Bosten"**
 
 ```{r}
 library(MASS)
@@ -16,16 +16,118 @@ summary(Boston)
 pairs(Boston)
 ```
 
-
 This data set comprises 506 observations and 14 variables. This data set describes the crime rate by town (crim). Further varaibles are pupil teacher ratio by town (ptratio), lower status of the population in percent (lstat), average number of rooms per dwelling (rm), full-value property-tax rate per 10000$ (tax). All the other variables descriptions can be seen [here](https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/Boston.html).
 
-*3. visualization*
+**3. visualization**
 
 ```{r}
 library(tidyverse)
-library(corrplot)
+library(corrplot)# to draw all corplots
 cor_matrix<-cor(Boston)%>% round(2)
 cor_matrix
 corrplot.mixed(cor_matrix, lower.col="black", number.cex = .8 )
+cor_matrix1<-cor(Boston)%>% round()
+cor_matrix1
+
+corrplot.mixed(cor_matrix1, lower.col="black", number.cex = .8 )
 ```
 
+The graph and the new matrix shows the correlation of the variables. As you can see, there are some correlations (best seen in cor_matrix1, without decimals). The second plot shows only the strongest correlations
+The red dots show a negative correlation, for example the nitrogen oxidation is positive correlated with the proportion of non-retail business acres per town and a negative correlation with the proportion of residential land zoned for lots over 25,000sq.ft.  
+Also it seems that there exist more postiv correlations compared to negative ones. 
+
+**4. scaled data**
+
+```{r}
+boston_scaled <- scale(Boston)
+summary(boston_scaled)
+boston_scaled<-as.data.frame(boston_scaled)
+```
+
+The data are now scaled. The data were scaled by the following formula: *scaled(x)=x−mean(x)/sd(x)* Actually, the data are not changed, but the scale itself. Now we can compare the variables because we have no variables that have the same scale.
+
+```{r}
+summary(boston_scaled$crim) #summary of crim
+bins<-quantile(boston_scaled$crim) #changing in quantiles
+crime<-cut(boston_scaled$crim, breaks=bins, include.lowest = T, labels = c("low", "med_low", "med_high", "high")) #labeling
+table(crime)
+boston_scaled <- dplyr::select(boston_scaled, -crim) # droping crim rate
+boston_scaled<-data.frame(boston_scaled, crime)
+
+#splitting in train and test set
+n<-nrow(boston_scaled)
+ind<-sample(n, size = n*0.8)
+train<-boston_scaled[ind,]
+test<-boston_scaled[-ind,]
+correct_class <- test$crime
+test<- dplyr::select(test, -crime)
+```
+
+**5. linear discriminant analysis (LDA)**
+
+```{r}
+lda.fit <- lda(crime ~ ., data = train)
+lda.fit
+lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "orange", tex = 0.75, choices = c(1,2)){
+  heads <- coef(x)
+  arrows(x0 = 0, y0 = 0, 
+         x1 = myscale * heads[,choices[1]], 
+         y1 = myscale * heads[,choices[2]], col=color, length = arrow_heads)
+  text(myscale * heads[,choices], labels = row.names(heads), 
+       cex = tex, col=color, pos=3)
+}
+classes <- as.numeric(train$crime)
+plot(lda.fit, dimen = 2,col = classes, pch = classes)
+lda.arrows(lda.fit, myscale = 1)
+```
+
+Here you can see the LDA model
+
+**6. testing the model on test variables**
+
+```{r}
+lda.pred <- predict(lda.fit, newdata = test)
+table(correct = correct_class, predicted = lda.pred$class)
+```
+
+comment!!!!!!!
+
+
+**7. k-means algorithm**
+
+```{r}
+library(MASS)
+data("Boston")
+bos_scale<-scale(Boston)
+summary(bos_scale)
+dis_boston<-dist(bos_scale) #eucline distance
+summary(dis_boston)
+
+km <-kmeans(Boston, centers = 4)# k-means clustering
+pairs(Boston[1:5], col = km$cluster)# plot the Boston dataset with clusters
+pairs(Boston[6:10], col = km$cluster)
+
+km <-kmeans(Boston, centers = 3)# less clusters
+pairs(Boston[1:5], col = km$cluster)
+pairs(Boston[6:10], col = km$cluster)
+
+km <-kmeans(Boston, centers = 5)# more clusters
+pairs(Boston[1:5], col = km$cluster)
+pairs(Boston[6:10], col = km$cluster)
+```
+
+Alone with visualization it is not possible to determine the clusters. Therefore we need to determine k for k-means.
+Fortunately R can show grafically how many clusters are exist.
+
+```{r}
+set.seed(123)
+k_max <- 5# determine the number of clusters
+twcss <- sapply(1:k_max, function(k){kmeans(Boston, k)$tot.withinss})# calculate the total within sum of squares
+qplot(x = 1:k_max, y = twcss, geom = 'line')# visualize the results
+
+km <-kmeans(Boston, centers = 2)# k-means clustering
+pairs(Boston[1:5], col = km$cluster)# plot the Boston dataset with clusters
+pairs(Boston[6:10], col = km$cluster)
+```
+
+COMMENT!!!!!!!!!!!!!
