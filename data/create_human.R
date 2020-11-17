@@ -54,3 +54,6 @@ gii1
 hd_gii <- inner_join(hd1, gii1, by = "Country", suffix = c(".hd1", ".gii1"))
 dim(hd_gii)
 str(hd_gii)
+human<- hd_gii
+
+write.csv(human,file = "C:/Users/susac/Documents/R/IODS-project/data/human.csv")
