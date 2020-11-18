@@ -90,8 +90,7 @@ lda.pred <- predict(lda.fit, newdata = test)
 table(correct = correct_class, predicted = lda.pred$class)
 ```
 
-comment!!!!!!!
-
+As you can see, the model can predict at its best the high quantile of the crimes with only 1 miss predicted value. The model has its most problems in deciding if the crimes are in the category med_low or med_high. 
 
 **7. k-means algorithm**
 
@@ -117,7 +116,7 @@ pairs(Boston[6:10], col = km$cluster)
 ```
 
 Alone with visualization it is not possible to determine the clusters. Therefore we need to determine k for k-means.
-Fortunately R can show grafically how many clusters are exist.
+Fortunately R can show graphically how many clusters are exist.
 
 ```{r}
 set.seed(123)
@@ -130,4 +129,8 @@ pairs(Boston[1:5], col = km$cluster)# plot the Boston dataset with clusters
 pairs(Boston[6:10], col = km$cluster)
 ```
 
-COMMENT!!!!!!!!!!!!!
+The number of clusters is 2. The total cluster sum of squares (WCSS) has changed rapidly between 1 and 2 clusters, which means the cluster is 2. We can see quite often vertical clusters. So is for example between crim and zn. One cluster is vertical around low residential land but high er crime rate and the other cluster is spreaded horizontal around low crime rate.
+Also is one cluster vertical around high nitrogen rate but low crime rate and one cluster between 0.6 and 0.8 nitrogene rate and rising crime rate. Also, these clusters show us in variable taxes, that mostly the taxes were around 200 and 500. These clustering method is a good visualization to find objects which are more similar to some than to others.
+
+![Whoop Whoop, we are getting closer](https://media.giphy.com/media/xUPGcv4cXpq6KNcPEk/giphy.gif)
+
