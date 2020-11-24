@@ -33,7 +33,7 @@ The ggplot and the corrplot.mixed shows the correlations between the variables. 
 
 **2. PCA**
 ```{r}
-pca_hum<-prcomp(human)
+pca_hum<-prcomp(human) # PCA
 s<-summary(pca_hum)
 s
 pc_pr <- round(100*s$importance[2,], digits = 1)
@@ -42,11 +42,13 @@ pc_lab <- paste0(names(pc_pr), " (", pc_pr, "%)")
 biplot(pca_hum, cex = c(0.8, 1.5), col = c("lightslateblue", "cyan1"), xlab = pc_lab[1], ylab = pc_lab[2])
 ```
 
+Well, this seems quite strange. The scales are not the same. Here only one dimension explains all variances. Propably it is the GNI. But to interprete anything is quite difficult, even not possible I would say. Therefore, we need first to scale the data to have the same scale for all data.
+
 **3. standardized PCA**
 
 ```{r}
 human_std<-scale(human)
-pca_human<-prcomp(human_std)
+pca_human<-prcomp(human_std) # PCA
 s1<-summary(pca_human)
 s1
 pc_pr1 <- round(100*s1$importance[2,], digits = 1)
@@ -55,7 +57,28 @@ pc_lab1 <- paste0(names(pc_pr1), " (", pc_pr1, "%)")
 biplot(pca_human, cex = c(0.8, 1.5), col = c("lightslateblue", "cyan1"), xlab = pc_lab1[1], ylab = pc_lab1[2])
 ```
 
+As described above, we cannot interpret the results without the same scale. Through scaling data are still the same, but we can now compare it. I would say the results may the same also PCA looked different because of the different scales. 
+But only now we can make some correlations assumptions of these data. Probably, Parli F and Labo FM variables describe the PC2 whereas the other variables descirbe the other component. 
+
+
 **4. personal interpretation**
+
+The table "importance of components" shows the **standard deviation**, which is simply the *eigenvalue*, the **proportion of Variance**, the amount og the variance of the component accounts for in the data and the **Cumulative proportion** which is the accumulated amount of explained variance (all 8 compnents give us 100% of the total variance).
+Already PC1 accounts 53.62% of the total variance in the data. We could ask us, how many components do we actually want if already component 1 has such a huge impact. 
+Interesting is for example that the Nordic countries are all together. 
+
+```{r}
+screeplot(pca_human, type = "l", npcs = 15, main = "Screenplot of the 8 PCs")
+abline(h = 1, col="red", lty=5)
+legend("topright", legend=c("Eigenvalue = 1"),
+       col=c("red"), lty=5, cex=0.6)
+```
+
+This graph shows us, that already the first 2 components explain 90% of the variance (they have an Eigenvalue>1). So these 2 components would be enough to explain it.
+
+The standardized PCA shows that Maternal death rate and adolescent birth rate is strongly correlated/associated. Also Labo FM and Parli F. ALso the other 4 variables are correlated to each other (Edu2 FM, EDU Exp Life exp, GNI). But their arrows are around 180 degrees "away" from Mat. Mor. and Ado. Birth, it can be said that they are negatively correlated. All features which are horizontal located have almost no correlation to Labo FM and Parli F. 
+Besides this, we can say that Martial Mort. and Ado birth contribute to PCA1 positivly and Labo FM and Parli F contribute positively to PCA2. 
+Rwanda is a bit outside. that could be an outlier.
 
 **5. MCA**
 
@@ -65,16 +88,39 @@ data(tea)
 str(tea)
 dim(tea)
 
-keep_columns <- c("Tea", "How", "how", "sugar", "where", "lunch")
-tea_time <- select(tea, one_of(keep_columns))
+keep_columns <- c("Tea", "How", "how", "sugar", "where", "lunch") # keep the clomun
+tea_time <- dplyr::select(tea, one_of(keep_columns))
 summary(tea_time)
 str(tea_time)
 gather(tea_time) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_bar(colour='blue') + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
 
-mca <- MCA(tea_time, graph = FALSE)
+mca <- MCA(tea_time, graph = FALSE) # MCA for catecorical variable
+summary(mca)
+plot(mca, invisible=c("ind"), habillage = "quali")
+
+#MCA plot for all data except age, because this is a continues variable
+tea1<- subset(tea, select = -c(age)) # select function to drup 1 column
+mca <- MCA(tea1, graph = FALSE)
 summary(mca)
 plot(mca, invisible=c("ind"), habillage = "quali")
 ```
+
+The tea data set is about tea. 300 individuals were asked how they drink tea (18 questions), what are their product's perception (12 questions) and some personal details (4 questions). 
+Here we have kept the Tea (which tea), How (without something, with something, if yes what), how (tea bag, unpacked or both), lunch(dringing at lunch yes or no), sugar(yes or no) and where(where to buy it).
+We can say that in overall, most people take tea bags, drinking earl gray, mostly pure and not during lunch time. The sugar intake is slightly lower than without sugar and more people buy it in a chain store.
+
+The Multiple Correspondence Analysis analysis the pattern of relationships of several categorical variables.
+First we see the Eigenvalues: It shows the percentage of explained variances of each Dimensions. So has Dimension 1 15.24 % of the explained variance. 
+The individuals shows the coordinates of the first 10 variables, but also the contribution to the construction of the axis(in percentage), squared correlation (cos2), which represents the quality of the representation. The contribution is quite small because we have 300 observations. The first 3 dimensions are displayed.
+For our out, we can say that the first individual has the coordination of -0,298, with a contribution of 0.106 and squared correlation of 0.086.
+Next we have the results of the categories. The output shows the coordinates, the contribution nd the cos2 and the v.test for all categories (ok, here they show only the first 10 rows). The v. test follows normal distribution and can be seen as significant from 0 if the values are above 2 (1.96) or below -2 (1.96). 
+For the category black we have a significance in dimension1 (4.677) and dimension3 (-10.692) but not for the second dimension (0.929)
+The last tables shows the squared correlation of the categorical variable(~R2). If the value is close to 1 it has a strong correlation to that dimension. For example: how has the strongest correlation of all in dimension 1 with a value of 0.708. The weeks and actually absolutely no correlation has lunch with the dimension 1. 
+
+The first tea-time factor map shows the kept variables. 
+We can say that between Earl Gray and milk but also sugar there is a similarity. So it seems that people who drink Earl gray (also most nothing in their tea) if they use milk then in Earl gray. An no sugar is more common in black than than in Earl gray. It is also shown that between unpacked tea and tea shop there is a similarity because these categories are closer. So people buys unpacked tea in tea shops. Whereas, teabags are bought in chain stores more often. Green tea is a bit special. It stays alone. But it has more similarities with a chain store than a tea shop but just minor differences (distances).
+
+The second plot shows all categorical variables and their similarities. Here, it shows that Earl Grey has similarities with evenings. So they might drink more in the evenings. lunch and pub are very close. So mybe pople if the drink tea at lunch time than in a pup. Students are in the groups of 15-24 but they are not are otherwise far from the other variables. Maybe there were not so many individuals in that data set or the don't drink so ,uch tea.
 
 
 ![whoop whoop, it still makes fun :)](https://media.giphy.com/media/LMny8mw5VnvyKln1Jt/giphy.gif)
