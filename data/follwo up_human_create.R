@@ -23,7 +23,7 @@ keep <- c("Country", "Edu2.FM", "Labo.FM", "Life.Exp", "Edu.Exp", "GNI", "Mat.Mo
 human <- dplyr::select(human, one_of(keep))
 complete.cases(human)
 
-# Removing rows with missing data/values
+# Removing rows with missing values (NA)
 comp <- complete.cases(human)
 human_neu<- filter(human, comp == TRUE)
 
@@ -36,9 +36,9 @@ human_neu <- human_neu[1:last, ]
 rownames(human_neu) <- human_neu$Country
 human_neu <- dplyr::select(human_neu, -Country)
 
-# check that dimension matches to 155, 8
-dim(human_neu)
 
+dim(human_neu)
+# perfect it matches :)
 
 # new table sheet
 write.csv(human_neu,file = "C:/Users/susac/Documents/R/IODS-project/data/human_neu.csv")
