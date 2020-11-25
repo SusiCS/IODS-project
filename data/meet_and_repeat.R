@@ -38,8 +38,13 @@ RATSL <-  RATSL %>% mutate(Time = as.integer(substr(WD,3,4))) # only the weekday
 # a look at the long form data
 glimpse(BPRSL)
 str(BPRSL)
-# we have no 5 variables and 360 obeservations. The treatment group 1 or 2 (as a factor), the subject number, the weeks (this is the "most changed variable", all weeks are now in 1 column and not as before, as an own variable), the bprs results, and the weeks just as a number
+# we have no 5 variables and 360 observations. The treatment group 1 or 2 (as a factor), the subject number, the weeks (this is the "most changed variable", all weeks are now in 1 column and not as before, as an own variable), the bprs results, and the weeks just as a number
 
 glimpse(RATSL)
 str(RATSL)
-# also here we have 5 colums istead of 13 and 176 obervations. The ID column, the group column, the weekday group (also here are all weekdays are now in one column, (encompassed as one variable)), the gram column and the last column contains just the weekdays as an integer. 
+# also here we have 5 columns instead of 13 and 176 obervations. The ID column, the group column, the weekday group (also here are all weekdays are now in one column, (encompassed as one variable)), the gram column and the last column contains just the weekdays as an integer. 
+
+
+# new data sets
+write.csv(BPRSL,file = "C:/Users/susac/Documents/R/IODS-project/data/BPRSL.csv")
+write.csv(RATSL,file = "C:/Users/susac/Documents/R/IODS-project/data/RATSL.csv")
